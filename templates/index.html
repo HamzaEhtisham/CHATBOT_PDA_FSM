@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Chatbot</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+  />
+</head>
+
+<body>
+
+  <!-- MAIN LAYOUT -->
+  <div class="layout">
+
+    <!-- LEFT SIDEBAR : PDA -->
+    <div class="sidebar left-sidebar">
+      <h2>PDA Monitor</h2>
+
+      <div class="pda-section">
+        <h3>Pushdown Automaton</h3>
+        <p class="info-label">Context Stack (Top → Bottom)</p>
+
+        <div class="pda-stack" id="pda-stack">
+          <div class="stack-empty">Stack is empty</div>
+        </div>
+
+        <h3 class="sub-heading">Recent Operations</h3>
+        <div class="pda-operations" id="pda-operations">
+          <div class="operation neutral">No operations yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER : CHAT -->
+    <div class="main-content">
+      <div class="chat-container">
+
+        <div class="chat-header">
+          <h2>University Chatbot</h2>
+          <p>Your AI-powered academic guide</p>
+        </div>
+
+        <div class="chat-box" id="chat-box">
+          <div class="message bot-message">
+            <p>Hello! Ask me about courses, faculty, events, or internships.</p>
+          </div>
+        </div>
+
+        <div class="chat-input">
+          <form id="message-form">
+            <input
+              type="text"
+              id="message-input"
+              placeholder="Type your message here..."
+              autocomplete="off"
+            />
+            <button type="submit">Send</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR : FSM -->
+    <div class="sidebar right-sidebar">
+      <h2>FSM Monitor</h2>
+
+      <div class="fsm-section">
+        <h3>Finite State Machine</h3>
+
+        <div class="current-state" id="current-state">START</div>
+        <p class="info-label">Current Intent State</p>
+
+        <h3 class="sub-heading">State History</h3>
+        <div class="state-history" id="state-history">
+          <div class="state-item">START (Initial)</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================== SCRIPT ================== -->
+  <script>
+
+    function updateFSMDisplay(data) {
+      const currentStateEl = document.getElementById("current-state");
+      const historyEl = document.getElementById("state-history");
+
+      currentStateEl.textContent = data.current_state;
+
+      if (data.history) {
+        historyEl.innerHTML = data.history
+          .slice()
+          .reverse()
+          .map(
+            (s, i) =>
+              `<div class="state-item">${s}${i === 0 ? " (Current)" : ""}</div>`
+          )
+          .join("");
+      }
+    }
+
+    function updatePDADisplay(data) {
+      const stackEl = document.getElementById("pda-stack");
+      const opsEl = document.getElementById("pda-operations");
+
+      if (!data.stack || data.stack.length === 0) {
+        stackEl.innerHTML = `<div class="stack-empty">Stack is empty</div>`;
+      } else {
+        stackEl.innerHTML = data.stack
+          .map((item) => `<div class="stack-item">${item}</div>`)
+          .join("");
+      }
+
+      if (data.operation) {
+        const opDiv = document.createElement("div");
+        opDiv.className = `operation ${data.operation.type}`;
+        opDiv.textContent = data.operation.text;
+        opsEl.prepend(opDiv);
+
+        if (opsEl.children.length > 10) {
+          opsEl.removeChild(opsEl.lastChild);
+        }
+      }
+    }
+
+    async function updateMonitors() {
+      const fsmRes = await fetch("/get_fsm_history");
+      const fsmData = await fsmRes.json();
+      updateFSMDisplay(fsmData);
+
+      const pdaRes = await fetch("/get_pda_state");
+      const pdaData = await pdaRes.json();
+      updatePDADisplay(pdaData);
+    }
+
+    document.getElementById("message-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const input = document.getElementById("message-input");
+      const message = input.value.trim();
+      if (!message) return;
+
+      const chatBox = document.getElementById("chat-box");
+
+      chatBox.innerHTML += `<div class="message user-message"><p>${message}</p></div>`;
+      input.value = "";
+
+      const typing = document.createElement("div");
+      typing.className = "message bot-message typing";
+      typing.innerHTML = "<p>Typing...</p>";
+      chatBox.appendChild(typing);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+
+      const data = await res.json();
+      chatBox.removeChild(typing);
+
+      chatBox.innerHTML += `<div class="message bot-message"><p>${data.reply}</p></div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      updateMonitors();
+    });
+
+    updateMonitors();
+  </script>
+
+</body>
+</html>

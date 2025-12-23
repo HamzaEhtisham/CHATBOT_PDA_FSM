@@ -1,0 +1,165 @@
+* {
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #020617, #0a1b33);
+  color: #e5e7eb;
+}
+
+/* ===== Layout ===== */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  height: 100vh;
+}
+
+/* ===== Sidebars ===== */
+.sidebar {
+  padding: 16px;
+  background: #020617;
+  overflow-y: auto;
+}
+
+.left-sidebar {
+  border-right: 1px solid rgba(14,165,233,0.3);
+}
+
+.right-sidebar {
+  border-left: 1px solid rgba(34,197,94,0.3);
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* ===== Labels ===== */
+.info-label {
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.sub-heading {
+  font-size: 13px;
+  margin-top: 16px;
+}
+
+/* ===== PDA ===== */
+.stack-item {
+  background: rgba(14,165,233,0.15);
+  border: 1px solid #0ea5e9;
+  padding: 6px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.stack-empty {
+  color: #9ca3af;
+  text-align: center;
+}
+
+.operation {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.operation.push { color: #22c55e; }
+.operation.pop { color: #ef4444; }
+.operation.neutral { color: #9ca3af; }
+
+/* ===== FSM ===== */
+.current-state {
+  background: rgba(34,197,94,0.15);
+  border: 1px solid #22c55e;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.state-item {
+  font-size: 13px;
+  padding: 4px;
+  border-bottom: 1px dashed rgba(255,255,255,0.1);
+}
+
+/* ===== Chat ===== */
+.main-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-container {
+  width: 100%;
+  max-width: 700px;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #020617;
+  border-radius: 12px;
+}
+
+.chat-header {
+  padding: 16px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.chat-box {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.message {
+  margin-bottom: 10px;
+}
+
+.user-message p {
+  background: #0ea5e9;
+  color: black;
+  padding: 8px;
+  border-radius: 8px;
+  max-width: 70%;
+  margin-left: auto;
+}
+
+.bot-message p {
+  background: #1f2933;
+  padding: 8px;
+  border-radius: 8px;
+  max-width: 70%;
+}
+
+.chat-input {
+  padding: 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.chat-input form {
+  display: flex;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+}
+
+.chat-input button {
+  margin-left: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #22c55e;
+  font-weight: bold;
+  cursor: pointer;
+}
